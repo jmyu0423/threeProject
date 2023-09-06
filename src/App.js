@@ -1,13 +1,20 @@
 import './index.css';
-import {Suspense, useRef,useState} from 'react'
-import { Canvas} from '@react-three/fiber'
-import {OrbitControls, useGLTF} from '@react-three/drei'
+import { Suspense, useRef, useState } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { OrbitControls, useGLTF } from '@react-three/drei'
 
 function Model(props) {
-  const { nodes, materials } = useGLTF('/model/kia1/scene.gltf')
+  const group = useRef()
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime()
+    group.current.rotation.y = Math.sin(t / 2)
+  })
+  const { nodes, materials } = useGLTF('/kia1/scene.gltf')
+  
+
   return (
-    <group {...props} dispose={null}>
-      <group position={[48.7, -30.142, -76.076]} rotation={[-Math.PI / 2, 0, 0]} scale={0.693}>
+    <group ref={group} {...props} dispose={null}>
+      <group ref={group} position={[48.7, -30.142, -76.076]} rotation={[-Math.PI / 2, 0, 0]} scale={0.693}>
         <mesh geometry={nodes.wheel007_Material025_0.geometry} material={materials['Material.025']} />
         <mesh geometry={nodes.wheel007_rimb_0.geometry} material={materials.rimb} />
         <mesh geometry={nodes.wheel007_Material024_0.geometry} material={materials['Material.024']} />
@@ -73,7 +80,6 @@ function Model(props) {
   )
 }
 
-
 function App() {
  
   const [mesh,setMesh] = useState("#ffffff")
@@ -81,22 +87,37 @@ function App() {
   const [soul,setSoul] = useState("#ffffff")
 
   return (
-    <div className="App">
+    <div>
         <div className="wrapper">
             <div className="card">
                 <div className="product-canvas">
-                   <Canvas>
+                   <Canvas camera={{position: [250, 0, 0]}}>
                       <Suspense fallback={null}>
-                          <ambientLight />
-                          <spotLight intensity={0.9} 
-                                     angle={0.1} 
-                                     penumbra={1} 
-                                     position={[10,15,10]}
-                                     castShadow />
-                          <Model customColors={{mesh:mesh, stripes:stripes , soul:soul }}/>
-                          <OrbitControls enablePan={true}
-                                         enableZoom={true}
-                                         enableRotate={true}/>
+                          <ambientLight 
+                            visible={true}
+                            intensity={1.2}
+                          />
+                          <pointLight
+                            position={[10, 10, 10]}
+                            intensity={1}
+                          />
+                          <directionalLight
+                            position={[0, 10, 0]}
+                            intensity={10}
+                          />
+                          <spotLight
+                            intensity={0.9} 
+                            angle={0.1} 
+                            penumbra={1} 
+                            position={[0,0,10]}
+                            castShadow 
+                          />
+                          <Model rotation={[0, 0, 0]} customColors={{mesh:mesh, stripes:stripes , soul:soul }}/>
+                          <OrbitControls
+                            enablePan={true}
+                            enableZoom={true}
+                            enableRotate={true}
+                          />
                       </Suspense>
                    </Canvas>
                 </div>
@@ -106,20 +127,20 @@ function App() {
                         <input type="color" id="mesh" name="mesh"
                               value={mesh} 
                               onChange={(e) => setMesh(e.target.value)}/>
-                        <label for="mesh">Main</label>
+                        <label htmlFor="mesh">Main</label>
                       </div>
 
                     <div>
                         <input type="color" id="stripes" name="stripes"
                                 value= {stripes}
                                 onChange={(e) => setStripes(e.target.value)}/>
-                        <label for="stripes">Stripes</label>
+                        <label htmlFor="stripes">Stripes</label>
                     </div>
                     <div>
                         <input type="color" id="soul" name="soul"
                                 value={soul} 
                                 onChange={(e) => setSoul(e.target.value)}/>
-                        <label for="soul">Soul</label>
+                        <label htmlFor="soul">Soul</label>
                     </div>
                 </div>
             </div>
