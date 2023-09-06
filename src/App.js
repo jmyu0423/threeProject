@@ -1,23 +1,43 @@
 import './index.css';
 
-import { Suspense, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Environment } from '@react-three/drei'
+import { Suspense, useEffect, useState, useRef } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
+import { OrbitControls, Environment,  } from '@react-three/drei'
 import Sportage from './component/Sportage';
+import Soul from './component/Soul';
 import Lightformers from './component/Lightformers';
 
 function App() {
- 
-  const [mesh,setMesh] = useState("#ffffff")
-  const [stripes,setStripes] = useState("#ffffff")
-  const [soul,setSoul] = useState("#ffffff")
+  const [selectCar, setSelectCar] = useState("Sportage");
+
+  const Car = () =>{
+    if(selectCar === "Sportage"){
+      return <Sportage rotation={[0, 0, 0]}/>
+    }else if(selectCar === "Soul"){
+      return <Soul rotation={[0, 2, 0]} position={[0, -20, 0]}/>
+    }
+  }
+
+  const Camera = () =>{
+    const { camera } = useThree();
+    if(selectCar === "Sportage"){
+      camera.position.set(200, 0, 100);
+    }else{
+      camera.position.set(100, 0, 50);
+    }
+  }
+
+  const changeCar = (name) =>{
+    setSelectCar(name)
+  }
 
   return (
     <div>
         <div className="wrapper">
             <div className="card">
                 <div className="product-canvas">
-                   <Canvas camera={{position: [200, 0, 100]}}>
+                   <Canvas>
+                      <Camera/>
                       <Suspense fallback={null}>
                           <ambientLight 
                             intensity={0.5}
@@ -38,7 +58,8 @@ function App() {
                             castShadow 
                             shadow-bias={-0.0001}
                           />
-                          <Sportage rotation={[0, 0, 0]} customColors={{mesh:mesh, stripes:stripes , soul:soul }}/>
+                          <Car/>
+
                           <OrbitControls
                             enablePan={true}
                             enableZoom={true}
@@ -53,24 +74,16 @@ function App() {
                 <h2>KIA</h2>
                 <div className='colors'>
                     <div>
-                        <input type="color" id="mesh" name="mesh"
-                              value={mesh} 
-                              onChange={(e) => setMesh(e.target.value)}/>
-                        <label htmlFor="mesh">Main</label>
-                      </div>
+                      <button onClick={(e)=>changeCar(e.target.value)} value={'Sportage'}>Sportage</button>
+                    </div>
 
                     <div>
-                        <input type="color" id="stripes" name="stripes"
-                                value= {stripes}
-                                onChange={(e) => setStripes(e.target.value)}/>
-                        <label htmlFor="stripes">Stripes</label>
+                      <button onClick={(e)=>changeCar(e.target.value)} value={'Soul'}>Soul</button>
                     </div>
-                    <div>
-                        <input type="color" id="soul" name="soul"
-                                value={soul} 
-                                onChange={(e) => setSoul(e.target.value)}/>
-                        <label htmlFor="soul">Soul</label>
-                    </div>
+
+                    {/* <div>
+                      <button>Soul</button>
+                    </div> */}
                 </div>
             </div>
         </div>
