@@ -71,7 +71,7 @@ function App() {
                       </Suspense>
                    </Canvas>
                 </div>
-                <h2>KIA</h2>
+                <h2>Car</h2>
                 <div className='colors'>
                     <div>
                       <button onClick={(e)=>changeCar(e.target.value)} value={'Sportage'}>Sportage</button>
